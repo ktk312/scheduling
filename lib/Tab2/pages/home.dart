@@ -15,10 +15,6 @@ class Home extends ConsumerWidget {
     final provider = widgetRef.watch(activitiesProvider);
     List<Activity> activityList =
         provider.activities!.values.toList() as List<Activity>;
-    // final activityModel = state.;
-
-    // print(state);
-    // print(state.length);
 
     return Directionality(
       textDirection: TextDirection.ltr,
@@ -63,49 +59,53 @@ class Home extends ConsumerWidget {
               itemBuilder: (context, index) {
                 final activity = activityList[index];
 
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Container(
-                      width: 140,
-                      height: 40,
-                      child: Center(
-                        child: Text(
-                          activity.name.toString(),
-                          style: textStyle,
+                return Container(
+                  color:
+                      index % 2 == 0 ? null : Color.fromARGB(255, 255, 161, 0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Container(
+                        width: 140,
+                        height: 40,
+                        child: Center(
+                          child: Text(
+                            activity.name.toString(),
+                            style: textStyle,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '|',
-                      style: textStyle,
-                    ),
-                    Container(
-                      width: 80,
-                      height: 40,
-                      child: Center(
-                        child: Text(
-                          '${activity.start}',
-                          style: textStyle,
+                      Text(
+                        '|',
+                        style: textStyle,
+                      ),
+                      Container(
+                        width: 80,
+                        height: 40,
+                        child: Center(
+                          child: Text(
+                            '${activity.start}',
+                            style: textStyle,
+                          ),
                         ),
                       ),
-                    ),
-                    Text(
-                      '|',
-                      style: textStyle,
-                    ),
-                    Container(
-                      width: 80,
-                      height: 40,
-                      padding: EdgeInsets.only(right: 10),
-                      child: Center(
-                        child: Text(
-                          ' ${activity.end}',
-                          style: textStyle,
-                        ),
+                      Text(
+                        '|',
+                        style: textStyle,
                       ),
-                    )
-                  ],
+                      Container(
+                        width: 80,
+                        height: 40,
+                        padding: EdgeInsets.only(right: 10),
+                        child: Center(
+                          child: Text(
+                            ' ${activity.end}',
+                            style: textStyle,
+                          ),
+                        ),
+                      )
+                    ],
+                  ),
                 );
 
                 // return ListTile(
@@ -122,11 +122,35 @@ class Home extends ConsumerWidget {
             ),
           ],
         ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            // Add a new activity to the state.
-          },
-          child: Icon(Icons.add),
+        floatingActionButton: Container(
+          width: MediaQuery.of(context).size.width - 30,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              FloatingActionButton(
+                backgroundColor: Color.fromARGB(255, 255, 161, 0),
+                onPressed: () {
+                  // Add a new activity to the state.
+                },
+                child: Icon(
+                  Icons.home,
+                  size: 40,
+                  color: Color.fromARGB(255, 19, 29, 59),
+                ),
+              ),
+              FloatingActionButton(
+                backgroundColor: Color.fromARGB(255, 255, 161, 0),
+                onPressed: () {
+                  // Add a new activity to the state.
+                },
+                child: Icon(
+                  Icons.add,
+                  size: 40,
+                  color: Color.fromARGB(255, 19, 29, 59),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
