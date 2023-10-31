@@ -1,54 +1,18 @@
-import 'dart:convert';
-
-ActivityModel activityModelFromJson(String str) =>
-    ActivityModel.fromJson(json.decode(str));
-
-String activityModelToJson(ActivityModel data) => json.encode(data.toJson());
-
-class ActivityModel {
-  String? date;
-  Map<String, Activity>? activities;
-
-  ActivityModel({
-    this.date,
-    this.activities,
-  });
-
-  ActivityModel copyWith({
-    String? date,
-    Map<String, Activity>? activities,
-  }) =>
-      ActivityModel(
-        date: date ?? this.date,
-        activities: activities ?? this.activities,
-      );
-
-  factory ActivityModel.fromJson(Map<String, dynamic> json) => ActivityModel(
-        date: json["Date"],
-        activities: Map.from(json["Activities"]!)
-            .map((k, v) => MapEntry<String, Activity>(k, Activity.fromJson(v))),
-      );
-
-  Map<String, dynamic> toJson() => {
-        "Date": date,
-        "Activities": Map.from(activities!)
-            .map((k, v) => MapEntry<String, dynamic>(k, v.toJson())),
-      };
-}
-
 class Activity {
-  String? name;
+  final String name;
   String? start;
   String? end;
   String? repeats;
   String? ends;
+  final String date;
 
   Activity({
-    this.name,
+    required this.name,
     this.start,
     this.end,
     this.repeats,
     this.ends,
+    required this.date,
   });
 
   Activity copyWith({
@@ -57,6 +21,7 @@ class Activity {
     String? end,
     String? repeats,
     String? ends,
+    String? date,
   }) =>
       Activity(
         name: name ?? this.name,
@@ -64,21 +29,24 @@ class Activity {
         end: end ?? this.end,
         repeats: repeats ?? this.repeats,
         ends: ends ?? this.ends,
+        date: date ?? this.date,
       );
 
   factory Activity.fromJson(Map<String, dynamic> json) => Activity(
-        name: json["Name"],
-        start: json["Start"],
-        end: json["End"],
-        repeats: json["Repeats"],
-        ends: json["Ends"],
+        name: json['Name'],
+        start: json['Start'],
+        end: json['End'],
+        repeats: json['Repeats'],
+        ends: json['Ends'],
+        date: json['date'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
-        "Name": name,
-        "Start": start,
-        "End": end,
-        "Repeats": repeats,
-        "Ends": ends,
+        'Name': name,
+        'Start': start,
+        'End': end,
+        'Repeats': repeats,
+        'Ends': ends,
+        'date': date,
       };
 }
