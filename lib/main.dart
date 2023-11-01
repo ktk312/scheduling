@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scheduling/Tab2/pages/home.dart';
+import 'package:scheduling/Tab2/pages/activity_list_screen.dart';
 
 void main() {
   runApp(
-    ProviderScope(child: MyApp()),
+    const ProviderScope(child: MyApp()),
   );
 }
 
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Home(),
+      home: ActivityListScreen(),
     );
   }
 }

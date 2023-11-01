@@ -4,7 +4,6 @@ class Activity {
   String? end;
   String? repeats;
   String? ends;
-  final String date;
 
   Activity({
     required this.name,
@@ -12,7 +11,6 @@ class Activity {
     this.end,
     this.repeats,
     this.ends,
-    required this.date,
   });
 
   Activity copyWith({
@@ -21,7 +19,6 @@ class Activity {
     String? end,
     String? repeats,
     String? ends,
-    String? date,
   }) =>
       Activity(
         name: name ?? this.name,
@@ -29,7 +26,6 @@ class Activity {
         end: end ?? this.end,
         repeats: repeats ?? this.repeats,
         ends: ends ?? this.ends,
-        date: date ?? this.date,
       );
 
   factory Activity.fromJson(Map<String, dynamic> json) => Activity(
@@ -38,7 +34,6 @@ class Activity {
         end: json['End'],
         repeats: json['Repeats'],
         ends: json['Ends'],
-        date: json['date'] ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -47,6 +42,5 @@ class Activity {
         'End': end,
         'Repeats': repeats,
         'Ends': ends,
-        'date': date,
       };
 }

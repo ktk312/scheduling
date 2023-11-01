@@ -1,8 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
-import 'package:riverpod/riverpod.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scheduling/Tab2/models/activity_model.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -27,18 +25,20 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     return jsonDataFile;
   }
 
-  void addActivity(String date, Activity activity) {
+  void addActivity(String date, Activity activity) async {
     if (!state.containsKey(date)) {
       state[date] = [];
     }
 
     state[date]!.add(activity);
     writeJsonFile(state);
+    await readJsonFile();
   }
 
-  void updateActivity(String date, Activity activity, int index) {
+  void updateActivity(String date, Activity activity, int index) async {
     state[date]![index] = activity;
     writeJsonFile(state);
+    await readJsonFile();
   }
 
   void deleteActivity(String date, String name) {
@@ -60,7 +60,7 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     final file = File('${docDir.path}/tab_two.json').openWrite();
     final encodedJsonData = jsonEncode(jsonData);
     file.write(encodedJsonData);
-    readJsonFile();
+    await readJsonFile();
   }
 
   Map<String, List<Activity>> parseMap(Map<String, dynamic> data) {
