@@ -1,30 +1,31 @@
-// ignore_for_file: must_be_immutable
+// ignore_for_file: must_be_immutable, unused_result
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:scheduling/Tab2/models/activity_model.dart';
-import 'package:scheduling/Tab2/providers/activity_provider.dart';
-import 'activity_dialog_screen.dart';
+import 'package:scheduling/modules/Tab2/models/activity_model.dart';
+import 'package:scheduling/modules/Tab2/providers/activity_provider.dart';
 
 final activityProvider =
     StateNotifierProvider<ActivityProvider, Map<String, List<Activity>>>((ref) {
   return ActivityProvider();
 });
 
-class ActivityListScreen extends ConsumerWidget {
-  ActivityListScreen({super.key});
+class ActivityHistoryScreen extends ConsumerWidget {
+  ActivityHistoryScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef widgetRef) {
-    print("Home Widget");
     final activities = widgetRef.watch(activityProvider);
-    final ref = widgetRef.read(activityProvider.notifier);
+    // final ref = widgetRef.read(activityProvider.notifier);
+
+    widgetRef.refresh(activityProvider.notifier);
 
     return Directionality(
       textDirection: TextDirection.ltr,
       child: Scaffold(
         backgroundColor: const Color.fromARGB(255, 19, 29, 59),
         appBar: AppBar(
+          automaticallyImplyLeading: false,
           title: const Text(
             'Time Management',
             style: TextStyle(color: Colors.black),
@@ -45,7 +46,7 @@ class ActivityListScreen extends ConsumerWidget {
         body: ListView.builder(
             itemCount: activities.length,
             itemBuilder: (context, idx) {
-              final date = activities.keys.elementAt(idx);
+              final date = activities.keys.toList().reversed.elementAt(idx);
               final activitiesForDate = activities[date]!;
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,10 +71,12 @@ class ActivityListScreen extends ConsumerWidget {
 
                       return GestureDetector(
                         onTap: () {
-                          Navigator.of(context).push(MaterialPageRoute(
-                            builder: (context) => ActivityDialogScreen(
-                                activities.keys.elementAt(idx), idx),
-                          ));
+                          //   Navigator.of(context).push(MaterialPageRoute(
+                          //     builder: (context) => ActivityDialogScreen(
+                          //         activities.keys.elementAt(idx),
+                          //         idx,
+                          //         activityProvider),
+                          //   ));
                         },
                         child: Container(
                           color: index % 2 == 0
@@ -158,45 +161,49 @@ class ActivityListScreen extends ConsumerWidget {
                 ],
               );
             }),
-        floatingActionButton: SizedBox(
-          width: MediaQuery.of(context).size.width - 30,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              FloatingActionButton(
-                heroTag: 'a',
-                backgroundColor: const Color.fromARGB(255, 255, 161, 0),
-                onPressed: () {
-                  // Add a new activity to the state.
-                  Activity activity = Activity(
-                    name: 'test activity',
-                  );
-                  ref.addActivity('23-Oct-2023', activity);
-                  print('activity added');
-                },
-                child: const Icon(
-                  Icons.home,
-                  size: 40,
-                  color: Color.fromARGB(255, 19, 29, 59),
-                ),
-              ),
-              FloatingActionButton(
-                heroTag: 'b',
-                backgroundColor: const Color.fromARGB(255, 255, 161, 0),
-                onPressed: () {
-                  // Add a new activity to the state.
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ActivityDialogScreen(null, null)));
-                },
-                child: const Icon(
-                  Icons.add,
-                  size: 40,
-                  color: Color.fromARGB(255, 19, 29, 59),
-                ),
-              ),
-            ],
-          ),
-        ),
+        // floatingActionButton: SizedBox(
+        //   width: MediaQuery.of(context).size.width - 30,
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       FloatingActionButton(
+        //         heroTag: 'a',
+        //         backgroundColor: const Color.fromARGB(255, 255, 161, 0),
+        //         onPressed: () {
+        //           // Add a new activity to the state.
+        //           Activity activity = Activity(
+        //             name: 'test activity',
+        //           );
+        //           widgetRef
+        //               .read(activityProvider.notifier)
+        //               .addActivity('3-Nov-2023', activity);
+        //           print('activity added');
+        //         },
+        //         child: const Icon(
+        //           Icons.home,
+        //           size: 40,
+        //           color: Color.fromARGB(255, 19, 29, 59),
+        //         ),
+        //       ),
+        //       FloatingActionButton(
+        //         heroTag: 'b',
+        //         backgroundColor: const Color.fromARGB(255, 255, 161, 0),
+        //         onPressed: () async {
+        //           // Add a new activity to the state.
+        //           final result = await Navigator.of(context).push(
+        //               MaterialPageRoute(
+        //                   builder: (context) => ActivityDialogScreen(
+        //                       null, null, activityProvider)));
+        //         },
+        //         child: const Icon(
+        //           Icons.add,
+        //           size: 40,
+        //           color: Color.fromARGB(255, 19, 29, 59),
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
       ),
     );
   }
