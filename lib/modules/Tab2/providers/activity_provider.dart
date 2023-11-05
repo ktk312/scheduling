@@ -5,18 +5,25 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scheduling/modules/Tab2/models/activity_model.dart';
 import 'package:path_provider/path_provider.dart';
 
+//Used for UI of the dialog screen for startTime
 StateProvider<TimeOfDay> startTimeProvider =
     StateProvider((ref) => TimeOfDay(hour: 2, minute: 0));
 
+//Used for UI of the dialog screen for endTime
 StateProvider<TimeOfDay> endTimeProvider =
     StateProvider((ref) => TimeOfDay(hour: 4, minute: 0));
 
+//Used for UI of the dialog screen for activity repeat handling
 StateProvider<String> repeatProvider = StateProvider((ref) => 'Everyday');
-
+//Used for UI of the dialog screen for activity repeat ending
 StateProvider<String> endRepeatProvider = StateProvider((ref) => 'Never');
-
+//Used for UI of the dialog screen for activity name
 StateProvider<String> nameProvider = StateProvider((ref) => '');
 
+//Controls the file state and functions performed on the json file stored
+// in the device storage
+//File read/Write operations
+//Activity CRUD operations
 class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
   ActivityProvider() : super({}) {
     initialSetup();
@@ -27,11 +34,13 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     await readJsonFile();
   }
 
+  //Activity Dialog variables used to keep track of the options selected
   TimeOfDay? selectedStartTime;
   TimeOfDay? selectedEndTime;
   String? selectedRepeat;
   String? selectedEndRepeat;
 
+  //Constant list for repeat options
   List<String> repeatDays = [
     'Everyday',
     'Monday',
@@ -41,6 +50,7 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     'Friday'
   ];
 
+  //constant list for repead end options
   List<String> repeatEndDays = [
     'Never',
     'Monday',
@@ -50,6 +60,9 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     'Friday'
   ];
 
+  //This function sets up the file in storage.
+  //If file doesnt exist it creates one with empty json object
+  //Can also be used for adding dummy data to file
   setupFile() async {
     Directory docDir = await getApplicationDocumentsDirectory();
     File jsonDataFile = File('${docDir.path}/tab_two.json');
@@ -59,6 +72,7 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     }
   }
 
+  //Function to identify and get the json file where needed
   Future<File> getDataFile() async {
     Directory docDir = await getApplicationDocumentsDirectory();
     File jsonDataFile = File('${docDir.path}/tab_two.json');
@@ -66,27 +80,29 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     return jsonDataFile;
   }
 
+  //This function add an activity to state and write the updated state to the file
   void addActivity(String date, Activity activity) async {
     if (!state.containsKey(date)) {
       state[date] = [];
     }
-
     state[date]!.add(activity);
     await writeJsonFile(state);
   }
 
+  //This function update activity and update the provider state then write the update state to file
   void updateActivity(String date, Activity activity, int index) async {
     state[date]![index] = activity;
     await writeJsonFile(state);
   }
 
+  // This function delete the activity from provider state and write new state to file.
   void deleteActivity(String date, String name) async {
     state[date]!.removeWhere((element) => element.name == name);
     await writeJsonFile(state);
     await readJsonFile();
   }
 
-  //read and write json file
+  //This function performs all the read operations on the file and returns the data as list to state of the provider
   Future<Map<String, List<Activity>>> readJsonFile() async {
     Directory docDir = await getApplicationDocumentsDirectory();
     final file = await File('${docDir.path}/tab_two.json').readAsString();
@@ -96,6 +112,8 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     return newList;
   }
 
+  // This function performs write operations on the file.
+  //Receives state object , encode the state to json and write on the file
   Future<void> writeJsonFile(Map<String, List<Activity>> jsonData) async {
     Directory docDir = await getApplicationDocumentsDirectory();
     final file = File('${docDir.path}/tab_two.json').openWrite();
@@ -104,6 +122,7 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     await readJsonFile();
   }
 
+  // this function is intended to read the dynamic Map Object and convert to Our required Map with known types
   Map<String, List<Activity>> parseMap(Map<String, dynamic> data) {
     Map<String, List<Activity>> returnMap = {};
     for (var key in data.keys) {
@@ -118,6 +137,7 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
     return returnMap;
   }
 
+  //This function can be called to add some dummy history data to file for testing history screen
   dummyDataToFile() async {
     String date = '23-Oct-2023';
     List<Activity> activity = [

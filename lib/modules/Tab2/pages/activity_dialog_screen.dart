@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../reusables.dart';
 import '../models/activity_model.dart';
 import '../providers/activity_provider.dart';
-import '../constants.dart';
+import '../layout_params.dart';
 
 class ActivityDialogScreen extends ConsumerWidget {
   final String? date;
@@ -14,12 +14,6 @@ class ActivityDialogScreen extends ConsumerWidget {
       activityProvider;
   ActivityDialogScreen(this.date, this.activityIndex, this.activityProvider,
       {super.key});
-
-  DateTime timeOfDayToDateTime(TimeOfDay timeOfDay) {
-    final now = DateTime.now(); // Get the current date
-    return DateTime(
-        now.year, now.month, now.day, timeOfDay.hour, timeOfDay.minute);
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef widgetRef) {
@@ -36,73 +30,35 @@ class ActivityDialogScreen extends ConsumerWidget {
                 : ''
             : '');
 
-    assignActivity() {
-      final activity = widgetRef
-          .read(activityProvider.notifier)
-          .state[date]![activityIndex!];
-
-      widgetRef.read(activityProvider.notifier).selectedStartTime =
-          activity.start != null ? timeOfDayFromString(activity.start!) : null;
-      widgetRef.read(activityProvider.notifier).selectedEndTime =
-          activity.end != null ? timeOfDayFromString(activity.end!) : null;
-      widgetRef.read(activityProvider.notifier).selectedEndRepeat =
-          activity.ends ?? "Never";
-      widgetRef.read(activityProvider.notifier).selectedRepeat =
-          activity.repeats ?? 'Everyday';
-
-      widgetRef.read(startTimeProvider.notifier).state =
-          timeOfDayFromString(activity.start!);
-      widgetRef.read(endTimeProvider.notifier).state =
-          timeOfDayFromString(activity.end!);
-      widgetRef.read(repeatProvider.notifier).state =
-          activity.repeats ?? 'Everyday';
-      widgetRef.read(endRepeatProvider.notifier).state =
-          activity.ends ?? 'Never';
-    }
-
-    resetActivity() {
-      widgetRef.read(activityProvider.notifier).selectedStartTime = null;
-      widgetRef.read(activityProvider.notifier).selectedEndTime = null;
-      widgetRef.read(activityProvider.notifier).selectedEndRepeat = null;
-      widgetRef.read(activityProvider.notifier).selectedRepeat = null;
-      widgetRef.read(startTimeProvider.notifier).state =
-          TimeOfDay(hour: 12, minute: 0);
-      widgetRef.read(endTimeProvider.notifier).state =
-          TimeOfDay(hour: 12, minute: 0);
-      widgetRef.read(repeatProvider.notifier).state = 'Everyday';
-      widgetRef.read(endRepeatProvider.notifier).state = 'Never';
-    }
-
     if (activityIndex != null) {
-      Future(() => assignActivity());
+      Future(() =>
+          assignActivity(widgetRef, date!, activityIndex!, activityProvider));
     }
 
     return WillPopScope(
       onWillPop: () async {
-        resetActivity();
+        resetActivity(widgetRef, activityProvider);
         return true;
       },
       child: Scaffold(
         backgroundColor: primaryColor,
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text(
+          title: Text(
             appBarTitle,
-            style: TextStyle(color: Colors.black),
+            style: blackText,
           ),
           centerTitle: true,
           backgroundColor: whiteColor,
           actions: [IconButton(onPressed: () {}, icon: settingIcon)],
         ),
         body: Container(
-          padding: const EdgeInsets.only(top: 20, left: 10, right: 10),
+          padding: paddingScreen,
           child: ListView(
             children: [
               Row(
                 children: [
-                  Text(nameText,
-                      style: textStyle.copyWith(
-                          fontSize: 18, fontWeight: FontWeight.normal)),
+                  Text(nameText, style: textStyle18),
                   sizedBoxh20,
                   Expanded(
                     child: SizedBox(
@@ -110,16 +66,16 @@ class ActivityDialogScreen extends ConsumerWidget {
                       child: TextField(
                         controller: controller,
                         textAlignVertical: TextAlignVertical.center,
-                        style: const TextStyle(color: Colors.white),
+                        style: textStyle,
                         decoration: const InputDecoration(
                           border: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white70),
+                            borderSide: BorderSide(color: white70),
                           ),
                           focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white70),
+                            borderSide: BorderSide(color: white70),
                           ),
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(color: Colors.white70),
+                            borderSide: BorderSide(color: white70),
                           ),
                         ),
                       ),
@@ -127,7 +83,7 @@ class ActivityDialogScreen extends ConsumerWidget {
                   ),
                 ],
               ),
-              const Divider(height: 45, color: Colors.white70),
+              divider,
               Consumer(
                 builder: (context, ref, child) {
                   final repeatP = ref.watch(repeatProvider);
@@ -140,7 +96,7 @@ class ActivityDialogScreen extends ConsumerWidget {
                   });
                 },
               ),
-              const Divider(height: 45, color: Colors.white70),
+              divider,
               Consumer(
                 builder: (context, ref, child) {
                   final endRepeatP = ref.watch(endRepeatProvider);
@@ -154,7 +110,7 @@ class ActivityDialogScreen extends ConsumerWidget {
                   });
                 },
               ),
-              const Divider(height: 45, color: Colors.white70),
+              divider,
               Consumer(
                 builder: (context, ref, child) {
                   final startTimeP = ref.watch(startTimeProvider);
@@ -177,7 +133,7 @@ class ActivityDialogScreen extends ConsumerWidget {
                   });
                 },
               ),
-              const Divider(height: 45, color: Colors.white70),
+              divider,
               Consumer(
                 builder: (context, ref, child) {
                   final endTimeP = ref.watch(endTimeProvider);
@@ -264,22 +220,22 @@ class ActivityDialogScreen extends ConsumerWidget {
                                   .read(activityProvider.notifier)
                                   .selectedRepeat));
                     }
-                    resetActivity();
+                    resetActivity(widgetRef, activityProvider);
                     Navigator.of(context).pop(true);
                   },
                   child: const Text(submitText)),
               sizedBoxh10,
               ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
+                    backgroundColor: whiteColor,
                   ),
                   onPressed: () {
-                    resetActivity();
+                    resetActivity(widgetRef, activityProvider);
                     Navigator.of(context).pop();
                   },
-                  child: const Text(
+                  child: Text(
                     cancelText,
-                    style: TextStyle(color: Colors.black),
+                    style: blackText,
                   )),
             ],
           ),
