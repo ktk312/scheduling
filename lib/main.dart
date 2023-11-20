@@ -1,8 +1,10 @@
+import 'dart:isolate';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scheduling/modules/Tab2/pages/activity_list_screen.dart';
 
-void main() {
+main() {
   runApp(
     const ProviderScope(child: MyApp()),
   );

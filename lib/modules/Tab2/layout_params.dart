@@ -22,6 +22,7 @@ const String repeatText = 'Repeat';
 const String endRepeatText = 'End Repeat';
 const String submitText = 'Submit';
 const String cancelText = 'Cancel';
+const String endDateText = 'End Date';
 
 //Sizedboxes
 const sizedBoxh10 = SizedBox(height: 10);

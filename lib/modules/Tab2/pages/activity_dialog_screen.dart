@@ -100,7 +100,10 @@ class ActivityDialogScreen extends ConsumerWidget {
               Consumer(
                 builder: (context, ref, child) {
                   final endRepeatP = ref.watch(endRepeatProvider);
-                  return itemRow(context, endRepeatText, endRepeatP,
+                  return itemRow(
+                      context,
+                      endRepeatText,
+                      endRepeatP == "Never" ? endRepeatP : "On Date",
                       widgetRef.read(activityProvider.notifier).repeatEndDays,
                       onChanged: (value) {
                     ref.read(endRepeatProvider.notifier).state = value!;
@@ -111,6 +114,72 @@ class ActivityDialogScreen extends ConsumerWidget {
                 },
               ),
               divider,
+              Consumer(
+                builder: (context, ref, child) {
+                  final endRepeatP = ref.watch(endRepeatProvider);
+                  final endDateP = ref.watch(endDateProvider);
+                  final today = DateTime.now();
+                  if (endRepeatP == 'On Date') {
+                    return Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              endDateText,
+                              style: textStyle20,
+                            ),
+                            ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: secondaryColor,
+                                ),
+                                onPressed: () async {
+                                  final selectedEndDate = await showDatePicker(
+                                      context: context,
+                                      initialDate: today,
+                                      firstDate: today,
+                                      lastDate: DateTime(today.year + 5));
+
+                                  if (selectedEndDate != null) {
+                                    ref.read(endDateProvider.notifier).state =
+                                        getFormattedDate(selectedEndDate);
+                                    widgetRef
+                                            .read(activityProvider.notifier)
+                                            .selectedEndRepeat =
+                                        getFormattedDate(selectedEndDate);
+                                  }
+                                },
+                                child: Text(
+                                  endDateP,
+                                  style: textStyle.copyWith(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.normal),
+                                ))
+                          ],
+                        ),
+                        divider,
+                        // itemRow(
+                        //     context,
+                        //     endDateText,
+                        //     endRepeatP,
+                        //     widgetRef
+                        //         .read(activityProvider.notifier)
+                        //         .repeatEndDays, onChanged: (value) {
+                        //   ref.read(endRepeatProvider.notifier).state = value!;
+                        //   widgetRef
+                        //       .read(activityProvider.notifier)
+                        //       .selectedEndRepeat = value;
+                        // }),
+                      ],
+                    );
+                  } else {
+                    return Container();
+                  }
+                },
+              ),
+
+              //date picker for end repeat date.
+
               Consumer(
                 builder: (context, ref, child) {
                   final startTimeP = ref.watch(startTimeProvider);

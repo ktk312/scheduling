@@ -119,11 +119,11 @@ class ActivityListScreen extends ConsumerWidget {
                         ),
                         Container(
                           width: 80,
-                          height: 40,
+                          // height: 40,
                           padding: paddingRight10,
                           child: Center(
                             child: Text(
-                              ' ${activity.end}',
+                              ' ${activity.end}, ${activity.ends}, ${activity.repeats}',
                               style: textStyle,
                             ),
                           ),

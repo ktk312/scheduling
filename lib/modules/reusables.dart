@@ -16,6 +16,11 @@ String getFormattedDate(DateTime dateTime) {
   return formattedDate;
 }
 
+DateTime getDateFromString(String date) {
+  final day = date.split('-');
+  return DateTime(int.parse(day[0]), int.parse(day[1]), int.parse(day[2]));
+}
+
 //This function converts the json time string to TimeOfDay object
 //Time strings are in 12 hour format. This functions handles that too
 TimeOfDay timeOfDayFromString(String time) {
@@ -143,11 +148,10 @@ assignActivity(
       activity.ends ?? "Never";
   widgetRef.read(activityProvider.notifier).selectedRepeat =
       activity.repeats ?? 'Everyday';
-
   widgetRef.read(startTimeProvider.notifier).state =
-      timeOfDayFromString(activity.start!);
+      timeOfDayFromString(activity.start ?? '12:00 PM');
   widgetRef.read(endTimeProvider.notifier).state =
-      timeOfDayFromString(activity.end!);
+      timeOfDayFromString(activity.end ?? '12:00 PM');
   widgetRef.read(repeatProvider.notifier).state =
       activity.repeats ?? 'Everyday';
   widgetRef.read(endRepeatProvider.notifier).state = activity.ends ?? 'Never';
@@ -191,4 +195,74 @@ class DateWidget extends StatelessWidget {
       )),
     );
   }
+}
+
+List<Activity> calculateRepeat(Map<String, List<Activity>> state) {
+  List<Activity> todayList = [];
+  for (var key in state.keys) {
+    final newTodayList = calculateRepeatActivityForDate(key, state[key]!);
+
+    newTodayList.forEach((element) {
+      if (!todayList.contains(element)) {
+        todayList.add(element);
+      }
+    });
+  }
+  return todayList;
+}
+
+List<Activity> calculateRepeatActivityForDate(
+    String date, List<Activity> activityList) {
+  List<Activity> todayList = [];
+  final dateTime = DateTime.now();
+  activityList.forEach((activity) {
+    if (activity.ends != 'Never' && activity.ends != null) {
+      if (!getDateFromString(activity.ends!).isBefore(dateTime)) {
+        //date from the date that activity is in
+        //calculate everyday, everyweek, every2 week everymonth, everyyear here
+        switch (activity.ends) {
+          case 'Everyday':
+            todayList.add(activity);
+
+            break;
+          case 'Every Week':
+            //calculate every week
+            if (getFormattedDate(
+                    getDateFromString(date).add(Duration(days: 7))) ==
+                getFormattedDate(dateTime)) {
+              todayList.add(activity);
+            }
+
+            break;
+          case 'Every 2 Weeks':
+            if (getFormattedDate(
+                    getDateFromString(date).add(Duration(days: 14))) ==
+                getFormattedDate(dateTime)) {
+              todayList.add(activity);
+            }
+            break;
+          case 'Every Month':
+            DateTime monthDate = getDateFromString(date);
+            DateTime nextMonth =
+                DateTime(monthDate.year, monthDate.month + 1, monthDate.day);
+            if (getFormattedDate(nextMonth) == getFormattedDate(dateTime)) {
+              todayList.add(activity);
+            }
+            break;
+          case 'Every Year':
+            DateTime yearDate = getDateFromString(date);
+            DateTime nextYear =
+                DateTime(yearDate.year + 1, yearDate.month, yearDate.day);
+            if (getFormattedDate(nextYear) == getFormattedDate(dateTime)) {
+              todayList.add(activity);
+            }
+            break;
+          case 'Never':
+            break;
+          default:
+        }
+      }
+    }
+  });
+  return todayList;
 }

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:scheduling/modules/Tab2/models/activity_model.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:scheduling/modules/reusables.dart';
 
 //Used for UI of the dialog screen for startTime
 StateProvider<TimeOfDay> startTimeProvider =
@@ -19,6 +20,8 @@ StateProvider<String> repeatProvider = StateProvider((ref) => 'Everyday');
 StateProvider<String> endRepeatProvider = StateProvider((ref) => 'Never');
 //Used for UI of the dialog screen for activity name
 StateProvider<String> nameProvider = StateProvider((ref) => '');
+
+StateProvider<String> endDateProvider = StateProvider((ref) => 'Select Date');
 
 //Controls the file state and functions performed on the json file stored
 // in the device storage
@@ -39,25 +42,22 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
   TimeOfDay? selectedEndTime;
   String? selectedRepeat;
   String? selectedEndRepeat;
+  String? selectedEndDate;
 
   //Constant list for repeat options
   List<String> repeatDays = [
     'Everyday',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday'
+    'Every Week',
+    'Every 2 Weeks',
+    'Every Month',
+    'Every Year',
+    'Never',
   ];
 
-  //constant list for repead end options
+  //constant list for repeat end options
   List<String> repeatEndDays = [
     'Never',
-    'Monday',
-    'Tuesday',
-    'Wednesday',
-    'Thursday',
-    'Friday'
+    'On Date',
   ];
 
   //This function sets up the file in storage.
@@ -135,6 +135,12 @@ class ActivityProvider extends StateNotifier<Map<String, List<Activity>>> {
       returnMap[key] = activityList;
     }
     return returnMap;
+  }
+
+  // this function when fired from background on date change will read file
+  // and add all repeat activities for today to list to view
+  addRepeatActivitiesforToday() {
+    List<Activity> activityList = calculateRepeat(state);
   }
 
   //This function can be called to add some dummy history data to file for testing history screen
